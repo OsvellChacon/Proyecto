@@ -145,7 +145,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "es"
 
 LOCALE_PATHS = [
-    BASE_DIR / "locale",  # Asegúrate de que esta línea está en tu configuración
+    os.path.join(BASE_DIR, "locale"),
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
