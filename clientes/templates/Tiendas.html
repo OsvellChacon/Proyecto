@@ -1,0 +1,122 @@
+{% extends 'dashmenu/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="main-panel">
+
+  <div class="content-wrapper">
+    <div class="col-lg-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          {% if messages %}
+          {% for m in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{m}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>         
+          {% endfor %}
+      {% endif %}
+          <div class="d-flex justify-content-end align-items-start">
+            <div class="input-group" style="width: auto;">
+              <form method="GET" action="{% url 'Tiendas' %}" class="form-inline my-2 my-lg-0">
+                <div class="form-group">
+                    <input type="text" name="q" class="form-control mr-sm-2" placeholder="Buscar Tienda...">
+                </div>
+            </form>
+            </div>
+          </div>
+          <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Tiendas</h4>
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Cliente</th>
+                            <th>RIF</th>
+                            <th>Dirección</th>
+                            {% if perms.clientes.change_tiendas %}
+                            <th>Acciones</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in shop %}
+                        <tr>
+                            <td>{{forloop.counter}}</td>
+                            <td>{{s.Cliente}}</td>
+                            <td>{{s.RIF}}</td>
+                            <td>{{s.Direccion}}</td>
+                            <td>
+                                <div>
+                                  {% if perms.clientes.view_tiendas %}
+                                  <a href="{% url 'shopCard' s.id %}">
+                                      <button class="btn btn-success"><i class="fa fa-shopping-cart" aria-hidden="true"></i></button>
+                                  </a>
+                                  {% endif %}                              
+                                  {% if perms.clientes.change_tiendas %}
+                                  <a href="{% url 'uptShoping' s.id %}"><button class="btn btn-warning"><i class="fa fa-undo" aria-hidden="true"></i></button></a>
+                                  {% endif %}
+                                  {% if perms.clientes.delete_tiendas %}
+                                  <a href="{% url 'dltShoping' s.id %}"><button class="btn btn-danger btnEliminacion"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                                  {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                  </table><br>
+                <div>
+                    <center>{% include 'paginator.html' %}</center>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-center mt-2 flex-wrap">
+            {% if perms.clientes.view_tiendas %}
+            <div class="btn-group">
+              <button type="button" class="btn btn-success btn-lg m-2 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Excel
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'tiendaExcel' %}" target="_blank">Descargar Excel</a></li>
+                <li><button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#importModal">Importar Excel</button></li>
+              </ul>
+            </div>
+            <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Importar Excel</h5>
+                    <p class="modal-body">Para importar correctamente el archivo de Excel, asegúrate de que las columnas en tu archivo de Excel coincidan exactamente con los campos de la aplicacion</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form method="post" enctype="multipart/form-data" action="{% url 'importarExcel' %}">
+                      {% csrf_token %}
+                      <input type="file" name="excel_file" style="margin-bottom: 10px;">
+                      <button type="submit" class="btn btn-primary">Importar</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% if perms.clientes.view_tiendas %}            
+            <a href="{% url 'tiendaPDF' %}" target="_blank"><button class="btn btn-danger btn-lg m-2">Generar PDF</button></a>
+            {% endif %}
+            {% if perms.clientes.add_tiendas %}
+            <a href="{% url 'AddShoping' %}"><button class="btn btn-primary btn-lg m-2">Registrar Tienda</button></a>
+            {% endif %}
+        </div>
+        
+        
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

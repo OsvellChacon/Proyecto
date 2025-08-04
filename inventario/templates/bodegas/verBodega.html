@@ -1,0 +1,67 @@
+{% extends 'dashmenu/main.html' %}
+{% block content %}
+<div class="container">
+    <div class="main-body">
+          <div class="row gutters-sm">
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <div class="card-body">
+                  <h1>Detalles de Bodega</h1>
+                  <div class="d-flex flex-column align-items-center text-center">
+                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="{{ user.username }}" class="rounded-circle" width="150">
+                    <div class="mt-3">
+                      <h4>{{cliente.Nombre}} {{cliente.Apellido}}</h4>
+                      <p class="text-secondary mb-1">{{cliente.Tienda}}</p>
+                      <a href="https://wa.me/{{cliente.Telefono}}" target="_blank"><button class="btn btn-success">Whatsapp</button></a>
+                    </div>
+                  </div>
+                </div>
+              </div>          
+            </div>
+            <div class="col-md-8">
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Nombre de la Bodega</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{Bodegas.nombre}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Codigo</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{Bodegas.codigo}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Ubicacion</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{Bodegas.ubicacion}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Productos Asociados</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{producto}}
+                    </div>
+                  </div>
+                  <hr>
+                </div>
+              </div>              
+            </div>
+          </div>
+
+        </div>
+    </div>
+{% endblock %}

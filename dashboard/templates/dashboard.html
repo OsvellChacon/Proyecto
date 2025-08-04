@@ -1,0 +1,217 @@
+{% extends 'dashmenu/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin">
+              <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                  {% if messages %}
+                  {% for m in messages %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                      {{ m }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+                <h3 class="font-weight-bold">Bienvenido {% if user.is_authenticated %} {{user.nombre}} {{user.apellido}} {% endif %}</h3>
+              </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 grid-margin stretch-card">
+              <div class="card tale-bg">
+                <div class="card-people mt-auto">
+                  <img src="{% static 'images/dashboard/people.svg'%}" alt="people">
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 grid-margin transparent">
+              <div class="row">
+                {% if perms.clientes.view_clientes %}
+                <div class="col-md-6 mb-4 stretch-card transparent">
+                  <div class="card card-tale">
+                    <a href="{% url 'cliente' %}" style="color: aliceblue; text-decoration: none;">
+                    <div class="card-body">
+                      <p class="mb-4">Clientes</p>
+                      <p class="fs-30 mb-2">{{chocolate}}</p>
+                    </div>
+                    </a>
+                  </div>
+                </div>
+                {% endif %}
+                {% if perms.usuarios.view_customuser %}
+                <div class="col-md-6 mb-4 stretch-card transparent">
+                  <div class="card card-dark-blue">
+                    <a href="{% url 'usuarios' %}" style="color: aliceblue; text-decoration: none;">
+                    <div class="card-body">
+                      <p class="mb-4">Usuarios</p>
+                      <p class="fs-30 mb-2">{{vanila}}</p>
+                    </div>
+                  </a>
+                  </div>
+                </div>
+                {% endif %}
+              </div>
+              <div class="row">
+                {% if perms.inventario.view_stock %}
+                <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
+                  <div class="card card-light-blue">
+                    <a href="{% url 'inventario' %}" style="color: aliceblue; text-decoration: none;">
+                    <div class="card-body">
+                      <p class="mb-4">Productos</p>
+                      <p class="fs-30 mb-2">{{st_counter}}</p>
+                    </div>
+                    </a>
+                  </div>
+                </div>
+                {% endif %}
+                <div class="col-md-6 stretch-card transparent">
+                  <div class="card card-light-danger">
+                    <div class="card-body">
+                      <p class="mb-4">Ganancias</p>
+                      <p class="fs-30 mb-2">0$</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card position-relative">
+                <div class="card-body">
+                  <div id="detailedReports" class="carousel slide detailed-report-carousel position-static pt-2" data-ride="carousel">
+                    <div class="carousel-inner">
+                      <div class="carousel-item active">
+                        <div class="row">
+                          <div class="col-md-12 col-xl-3 d-flex flex-column justify-content-start">
+                            <div class="ml-xl-4 mt-3">
+                            <p class="card-title">Detalles de Ventas</p>
+                              <h1 class="text-primary">$34040</h1>
+                              <h3 class="font-weight-500 mb-xl-4 text-primary">(Nombre de la tienda)</h3>
+                              <p class="mb-2 mb-xl-0">Agregar descripcion del conductor que realizo la venta y el lugar donde la hizo</p>
+                            </div>  
+                            </div>
+                          <div class="col-md-12 col-xl-9">
+                            <div class="row">
+                              <div class="col-md-6 border-right">
+                                <div class="table-responsive mb-3 mb-md-0 mt-3">
+                                  <table class="table table-borderless report-table">
+                                    <tr>
+                                      <td class="text-muted">Producto #1</td>
+                                      <td class="w-100 px-0">
+                                        <div class="progress progress-md mx-4">
+                                          <div class="progress-bar bg-primary" role="progressbar" style="width: 70%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                      </td>
+                                      <td><h5 class="font-weight-bold mb-0">713</h5></td>
+                                    </tr>
+                                    <tr>
+                                      <td class="text-muted">Producto #2</td>
+                                      <td class="w-100 px-0">
+                                        <div class="progress progress-md mx-4">
+                                          <div class="progress-bar bg-warning" role="progressbar" style="width: 30%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                      </td>
+                                      <td><h5 class="font-weight-bold mb-0">583</h5></td>
+                                    </tr>
+                                    <tr>
+                                      <td class="text-muted">Producto #3</td>
+                                      <td class="w-100 px-0">
+                                        <div class="progress progress-md mx-4">
+                                          <div class="progress-bar bg-danger" role="progressbar" style="width: 95%" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                      </td>
+                                      <td><h5 class="font-weight-bold mb-0">924</h5></td>
+                                    </tr>
+                                    <tr>
+                                      <td class="text-muted">Producto #4</td>
+                                      <td class="w-100 px-0">
+                                        <div class="progress progress-md mx-4">
+                                          <div class="progress-bar bg-info" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                      </td>
+                                      <td><h5 class="font-weight-bold mb-0">664</h5></td>
+                                    </tr>
+                                    <tr>
+                                      <td class="text-muted">Producto #5</td>
+                                      <td class="w-100 px-0">
+                                        <div class="progress progress-md mx-4">
+                                          <div class="progress-bar bg-primary" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                      </td>
+                                      <td><h5 class="font-weight-bold mb-0">560</h5></td>
+                                    </tr>
+                                    <tr>
+                                      <td class="text-muted">Producto #6</td>
+                                      <td class="w-100 px-0">
+                                        <div class="progress progress-md mx-4">
+                                          <div class="progress-bar bg-danger" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                      </td>
+                                      <td><h5 class="font-weight-bold mb-0">793</h5></td>
+                                    </tr>
+                                  </table>
+                                </div>
+                              </div>
+                              <div class="col-md-6 mt-3">
+                                <canvas id="north-america-chart"></canvas>
+                                <div id="north-america-legend"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#detailedReports" role="button" data-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#detailedReports" role="button" data-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+</div>
+<script>
+  // Función para actualizar los datos de órdenes recientes cada 5 segundos
+  function actualizarOrdenesRecientes() {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+              var data = JSON.parse(this.responseText);
+              
+              // Actualizar el cuerpo de la tabla de órdenes recientes
+              var ordenesRecientesHTML = "";
+              data.ordenes_recientes.forEach(function(factura) {
+                  ordenesRecientesHTML += "<tr>";
+                  ordenesRecientesHTML += "<td>" + factura.fecha_creacion + "</td>";
+                  ordenesRecientesHTML += "<td>" + factura.usuario + "</td>";
+                  ordenesRecientesHTML += "<td>" + factura.tienda + "</td>";
+                  ordenesRecientesHTML += "<td>"+  factura.cliente +"</td>";
+                  ordenesRecientesHTML += "<td><span class=\"badge " + (factura.status ? 'badge-success">Entregado' : 'badge-warning">En Proceso...') + "</span></td>";
+                  ordenesRecientesHTML += "</tr>";
+              });
+              document.getElementById("tbody").innerHTML = ordenesRecientesHTML;
+          }
+      };
+      xhttp.open("GET", "{% url 'dashboard_json' %}", true);
+      xhttp.send();
+  }
+
+  // Llamar a la función para actualizar los datos de órdenes recientes cada 5 segundos
+  setInterval(actualizarOrdenesRecientes, 15000); // 5000 milisegundos = 5 segundos
+
+  // Llamar a la función inicialmente para cargar los datos de órdenes recientes
+  actualizarOrdenesRecientes();
+</script>
+{% endblock %}

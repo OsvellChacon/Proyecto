@@ -1,0 +1,196 @@
+{% extends 'dashmenu/main.html' %}
+{% block content %}
+<div class="container">
+    <div class="main-body">
+          <div class="row gutters-sm">
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <div class="card-body">
+                  {% if messages %}
+                  {% for m in messages %}
+                    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                      {{ m }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+                  <div class="d-flex flex-column align-items-center text-center">
+                    <img src="{{ user.imagen_perfil.url }}" alt="{{ user.username }}" class="rounded-circle" width="150">
+                    <div class="mt-3">
+                      <h4>{{user.username}}</h4>
+                      <p class="text-secondary mb-1">{{user.cargo}}</p>
+                      <a href="https://wa.me/{{user.telefono}}" target="_blank"><button class="btn btn-success">Whatsapp</button></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card mt-3">
+                <center><h5><sup><ins>Acciones del Usuario</del></sup></h5></center>
+                <ul class="list-group list-group-flush">
+                  {% for log_entry in user_action_logs %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                      <div>
+                          <h6 class="mb-0">{{ log_entry.actor }} 
+                              {% if log_entry.action == 0 %}
+                                  insertó
+                              {% elif log_entry.action == 1 %}
+                                  actualizó
+                              {% elif log_entry.action == 2 %}
+                                  eliminó
+                              {% endif %}
+                              {{ log_entry.object_repr }}
+                          </h6>
+                          <p class="text-secondary">en {{ log_entry.content_type.app_label }} el {{ log_entry.timestamp }}</p>
+                      </div>
+                      <div>
+                          <p class="text-secondary">Objeto: {{ log_entry.object_repr }}</p>
+                      </div>
+                  </li>
+                  {% endfor %}
+              </ul>
+              
+            </div>          
+            </div>
+            <div class="col-md-8">
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Usuario</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{user.nombre}} {{user.apellido}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Correo</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{user.email}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Cedula</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{user.cedula}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Telefono</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{user.telefono}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Direccion</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{user.direccion}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Fecha De Registro</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{user.fecha_registro}}
+                    </div>
+                  </div>
+                  {% if request.user.is_superuser %}
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Cantidad de Permisos</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{user_permissions_count}}
+                    </div>
+                  </div>
+                  {% endif %}
+                  <hr>
+                </div>
+              </div>
+
+<!-- Botón para abrir la ventana modal -->
+{% if request.user.is_superuser %}
+<center>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#permisosModal">
+        Seleccionar Permisos
+    </button>
+</center>
+
+<!-- Ventana modal -->
+<div class="modal fade" id="permisosModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Seleccionar Permisos</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'asignar_permiso' user_id=user.id permission_id=permission_id %}">
+                    {% csrf_token %}
+                    <div class="container">
+                        {% for permiso in all_permissions %}
+                        {% if forloop.first or forloop.counter0|divisibleby:3 %}
+                        <div class="row">
+                        {% endif %}
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="permiso{{ permiso.id }}" name="permisos" value="{{ permiso.id }}" {% if permiso in user.user_permissions.all %}checked{% endif %}>
+                                <label class="form-check-label" for="permiso{{ permiso.id }}">
+                                    {{ permiso.name }}
+                                </label>
+                            </div>
+                        </div>
+                        {% if forloop.last or forloop.counter|divisibleby:3 %}
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    <center>
+                      <button type="submit" class="btn btn-primary">Guardar Permisos</button>
+                      <button type="button" class="btn btn-secondary" onclick="toggleCheckboxes()">Marcar/Desmarcar Todo</button>
+                      <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    </center>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function toggleCheckboxes() {
+    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    var isChecked = checkboxes[0].checked;
+    
+    checkboxes.forEach(function(checkbox) {
+        checkbox.checked = !isChecked;
+    });
+
+    var toggleButton = document.querySelector('#toggleButton');
+    toggleButton.textContent = isChecked ? 'Marcar Todo' : 'Desmarcar Todo';
+}
+</script>
+          
+            </div>
+          </div>
+
+        </div>
+    </div>
+
+{% endblock %}

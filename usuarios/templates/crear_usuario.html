@@ -1,0 +1,115 @@
+{% extends 'dashmenu/main.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+          <h4 class="card-title">Registrar Usuario</h4>
+          <form action="" method="post" class="forms-sample" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.username.label_tag }}
+                  {{ form.username|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.email.label_tag }}
+                  {{ form.email|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.password1.label_tag }}
+                  {{ form.password1|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.password2.label_tag }}
+                  {{ form.password2|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.nombre.label_tag }} <!-- Asegúrate de que este campo está en tu formulario -->
+                  {{ form.nombre|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.apellido.label_tag }} <!-- Asegúrate de que este campo está en tu formulario -->
+                  {{ form.apellido|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.cedula.label_tag }} <!-- Asegúrate de que este campo está en tu formulario -->
+                  {{ form.cedula|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.telefono.label_tag }} <!-- Asegúrate de que este campo está en tu formulario -->
+                  {{ form.telefono|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.direccion.label_tag }} <!-- Asegúrate de que este campo está en tu formulario -->
+                  {{ form.direccion|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.cargo.label_tag }} <!-- Asegúrate de que este campo está en tu formulario -->
+                  {{ form.cargo|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  {{ form.imagen_perfil.label_tag }} <!-- Asegúrate de que este campo está en tu formulario -->
+                  {{ form.imagen_perfil|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary mr-2">Registrar Usuario</button>
+            <a href="{% url 'vista_usuarios' %}" class="btn btn-light">Cancelar</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

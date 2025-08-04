@@ -1,0 +1,99 @@
+{% extends 'dashmenu/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="main-panel">
+
+  <div class="content-wrapper">
+    <div class="col-lg-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          {% if messages %}
+          {% for m in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{m}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>         
+          {% endfor %}
+      {% endif %}
+          <div class="d-flex justify-content-end align-items-start">
+            <div class="input-group" style="width: auto;">
+              <form method="GET" action="{% url 'Clientes' %}" class="form-inline my-2 my-lg-0">
+                <div class="form-group">
+                    <input type="text" name="q" class="form-control mr-sm-2" placeholder="Buscar cliente...">
+                </div>
+            </form>
+            </div>
+          </div>
+          <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Clientes</h4>
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Cliente</th>
+                            <th>Cedula</th>
+                            <th>Tienda</th>
+                            {% if perms.clientes.change_clientes %}
+                            <th>Acciones</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                      {% if cliente %}
+                        {% for c in cliente %}
+                        <tr>
+                            <td>{{forloop.counter}}</td>
+                            <td>{{c.Nombre}} {{c.Apellido}}</td>
+                            <td>{{c.Cedula}}</td>
+                            <td>{{c.Tienda}}</td>
+                            <td>
+                                <div>
+                                  {% if perms.clientes.view_clientes %}
+                                    <a href="{% url 'clientCard' c.id %}"><button class="btn btn-success"><i class="fa fa-user" aria-hidden="true"></i></button></a>
+                                  {% endif %}
+                                  {% if perms.clientes.change_clientes %}
+                                    <a href="{% url 'uptClient' c.id %}"><button class="btn btn-warning"><i class="fa fa-undo" aria-hidden="true"></i></button></a>
+                                  {% endif %}
+                                  {% if perms.clientes.delete_clientes %}
+                                    <a href="{% url 'dltClient' c.id %}"><button class="btn btn-danger btnEliminacion"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                                  {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                      {% else %}
+                        <tr>
+                          <td colspan="5">No Hay Registros Disponibles</td>
+                        </tr>
+                      {% endif %}
+                    </tbody>
+                  </table>
+                <div>
+                    <center>{% include 'paginator.html' %}</center>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center mt-2 flex-wrap">
+            {% if perms.clientes.view_clientes %}
+            <a href="{% url 'clientesExcel' %}" target="_blank"><button class="btn btn-success btn-lg m-2">Generar Excel</button></a>
+            {% endif %}
+            {% if perms.clientes.view_clientes %}
+            <a href="{% url 'clientesPDF' %}" target="_blank"><button class="btn btn-danger btn-lg m-2">Generar PDF</button></a>
+            {% endif %}
+            {% if perms.clientes.add_clientes %}
+            <a href="{% url 'AddClient' %}"><button class="btn btn-primary btn-lg m-2">Registrar Cliente</button></a>
+            {% endif %}
+        </div>
+        
+        
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

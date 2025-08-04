@@ -1,0 +1,110 @@
+{% extends 'dashmenu/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="main-panel">
+  <div class="content-wrapper">
+    {% if messages %}
+    {% for m in messages %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+          {{m}}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>         
+    {% endfor %}
+{% endif %}
+<div class="row">
+    <div class="col-md-12 grid-margin">
+      <div class="row">
+        <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+          <h3 class="font-weight-bold">Gestión de Inventario</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+    <div class="row">
+      <div class="col-md-4 grid-margin stretch-card">
+        <div class="card tale-bg">
+          <div class="card-people mt-auto">
+            <img src="{% static 'images/dashboard/people.svg'%}" alt="people">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-4 stretch-card transparent d-flex justify-content-center">
+            <a href="{% url 'inventario_general' %}" style="text-decoration: none; color: #ffffff; max-width: 600px;">
+                <div class="card card-tale" style="background-color: cornflowerblue;">
+                    <div class="card-body">
+                        <p class="mb-4">Inventario General</p>
+                        <p class="fs-30 mb-2">{{stock}}</p>  
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% if perms.inventario.add_categorias %}
+        <div class="col-md-6 mb-4 stretch-card transparent d-flex justify-content-center">
+            <a href="{% url 'add_categoria' %}" style="text-decoration: none; color: #ffffff; max-width: 600px;">
+                <div class="card card-tale" style="background-color: darkblue;">
+                    <div class="card-body">
+                        <p class="mb-4">Añadir</p>
+                        <p class="fs-30 mb-2">Categorias <i class="fa fa-file-text-o" aria-hidden="true"></i> </p>  
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endif %}
+        <div class="col-md-6 mb-4 stretch-card transparent d-flex justify-content-center">
+            <a href="{% url 'pdf_stock' %}" target="_blank" style="text-decoration: none; color: #ffffff; max-width: 600px;">
+                <div class="card card-tale" style="background-color: darkred;">
+                    <div class="card-body">
+                        <p class="mb-4">Descargar Reporte</p>
+                        <p class="fs-30 mb-2">PDF <i class="fa fa-file-pdf-o" aria-hidden="true"></i> </p>  
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 mb-4 stretch-card transparent d-flex justify-content-center">
+            <a href="{% url 'excel_stock' %}" target="_blank" style="text-decoration: none; color: #ffffff; max-width: 600px;">
+                <div class="card card-tale" style="background-color: darkgreen;">
+                    <div class="card-body">
+                        <p class="mb-4">Descargar Reporte</p>
+                        <p class="fs-30 mb-2">Excel <i class="fa fa-file-excel-o" aria-hidden="true"></i> </p>  
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    {% if perms.inventario.view_categorias %}
+      <div class="row">
+        {% for c, total in cat_total %}
+        <div class="col-md-3 mb-4 stretch-card transparent d-flex justify-content-center">
+            <div class="card card-tale" style="background-color: cornflowerblue; width: 300px; position: relative;">
+                <div class="dropdown" style="position: absolute; top: 10px; right: 10px;">
+                    {% if perms.inventario.change_categorias %}
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background: none;color: #ffffff; border: none;">
+                    </button>
+                    {% endif %}
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      {% if perms.inventario.change_categorias %}
+                        <a class="dropdown-item" href="{% url 'uptCategoria' c.id %}">Modificar</a>
+                      {% endif %}
+                      {% if perms.inventario.delete_categorias %}
+                        <a class="dropdown-item btnEliminacion" href="{% url 'dltCategoria' c.id %}">Eliminar</a>
+                      {% endif %}
+                    </div>
+                </div>
+                <a href="{% url 'view_categoria' c.id %}" style="text-decoration: none; color: #ffffff;">
+                    <div class="card-body">
+                        <p class="mb-4">{{c.nombre}}</p>
+                        <p class="fs-30 mb-2">{{total}}</p>  
+                    </div>
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+    
+    </div>
+    {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Compra</title>
+</head>
+<body>
+    <h2>Compra confirmada</h2>
+    <p>Detalles de la factura:</p>
+    {% for item in carrito %}
+        <p>{{ item.producto.nombre }}: {{ item.cantidad }} - ${{ item.total }}</p>
+    {% endfor %}
+    <p>Total: ${{ total_carrito }}</p>
+    <p>Gracias por tu compra. Se ha enviado un correo electrónico con los detalles de la factura.</p>
+
+    <script>
+        // Recuperar la información del producto actualizado del localStorage
+        var productoActualizado = JSON.parse(localStorage.getItem('productoActualizado'));
+        if (productoActualizado) {
+            var detalleActualizado = document.createElement('p');
+            detalleActualizado.textContent = `Producto actualizado: ${productoActualizado.producto} - Cantidad: ${productoActualizado.cantidad}`;
+            document.body.appendChild(detalleActualizado);
+        }
+    </script>
+</body>
+</html>

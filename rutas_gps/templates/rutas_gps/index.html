@@ -1,0 +1,376 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Simulación de Rutas GPS</title>
+    <link rel="stylesheet" href="{% static 'css/rutas.css' %}" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: row;
+            height: 100%;
+        }
+        #map {
+            flex: 2;
+            height: 100%;
+        }
+        .form-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress-bar-inner {
+            height: 20px;
+            width: 0;
+            background-color: #4caf50;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #form-container input:disabled {
+            background-color: #e9ecef;
+        }
+        .progress-container {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="map"></div>
+    <div class="form-container">
+        <h1>Seguimiento de Rutas GPS de los Camiones</h1>
+        <div id="vehicle-selection">
+            <label for="camion">Selecciona el Camión:</label>
+            <select id="camion">
+                <option value="">--Selecciona--</option>
+                {% for camion in camiones %}
+                    <option value="{{ camion.id }}"
+                            data-conductor="{{ camion.conductor }}"
+                            data-marca="{{ camion.marca }}"
+                            data-modelo="{{ camion.modelo }}"
+                            data-placa="{{ camion.placa }}"
+                            data-capacidad-tanque="{{ camion.capacidad_tanque }}">
+                        {{ camion.marca }} {{ camion.modelo }} - <small>({{ camion.placa }})</small>
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="form-container">
+            <h2>Ingresar coordenadas</h2>
+            <form method="post" id="location-form">
+                {% csrf_token %}
+                <label for="lat_inicio">Latitud de Inicio:</label>
+                <input type="text" id="lat_inicio" name="lat_inicio" disabled /><br />
+                <label for="lng_inicio">Longitud de Inicio:</label>
+                <input type="text" id="lng_inicio" name="lng_inicio" disabled /><hr />
+                <label for="lat_final">Latitud de Final:</label>
+                <input type="text" id="lat_final" name="lat_final" disabled /><br />
+                <label for="lng_final">Longitud de Final:</label>
+                <input type="text" id="lng_final" name="lng_final" disabled /><br />
+                <label for="gasolina_inicio">Gasolina al inicio (litros):</label>
+                <input type="number" id="gasolina_inicio" name="gasolina_inicio" min="0" step="0.01" /><br />
+            </form>
+        </div>
+
+        <button class="btn btn-outline-success" id="start-btn" style="display: none;">Iniciar Viaje</button>
+
+        <div class="progress-container" id="progress-container"></div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    var map = L.map('map').setView([10.5, -66.9], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var markerInicio = null;
+    var markerFinal = null;
+    var routeControl;
+    var latInicio, lngInicio, latFinal, lngFinal;
+
+    const camionSelect = document.getElementById("camion");
+    const progressContainer = document.getElementById("progress-container");
+
+    camionSelect.addEventListener('change', validarFormulario);
+
+    function validarFormulario() {
+        const camionSeleccionado = camionSelect.value !== "";
+        const inicioOk = document.getElementById("lat_inicio").value !== "" && document.getElementById("lng_inicio").value !== "";
+        const finalOk = document.getElementById("lat_final").value !== "" && document.getElementById("lng_final").value !== "";
+        document.getElementById("start-btn").style.display = (camionSeleccionado && inicioOk && finalOk) ? 'block' : 'none';
+    }
+
+    function validarCoordenadas(lat, lng) {
+        return !isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+    }
+
+    function crearMarkerConOpciones(lat, lng, tipo) {
+        const iconUrl = tipo === "Inicio"
+            ? 'https://cdn-icons-png.flaticon.com/512/447/447031.png'  // marcador verde moderno
+            : 'https://cdn-icons-png.flaticon.com/512/447/447038.png'; // marcador rojo moderno
+
+        const marker = L.marker([lat, lng], {
+            icon: L.icon({ iconUrl, iconSize: [25, 40], iconAnchor: [12, 40] })
+        }).addTo(map);
+
+        marker.on('click', () => {
+            Swal.fire({
+                title: `${tipo}`,
+                text: '¿Qué deseas hacer?',
+                icon: 'question',
+                showCancelButton: true,
+                showDenyButton: true,
+                confirmButtonText: 'Eliminar',
+                denyButtonText: 'Mover',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    map.removeLayer(marker);
+                    if (tipo === "Inicio") {
+                        markerInicio = null;
+                        document.getElementById("lat_inicio").value = "";
+                        document.getElementById("lng_inicio").value = "";
+                        if (routeControl) routeControl.remove();
+                    } else {
+                        markerFinal = null;
+                        document.getElementById("lat_final").value = "";
+                        document.getElementById("lng_final").value = "";
+                        if (routeControl) routeControl.remove();
+                    }
+                    validarFormulario();
+                } else if (result.isDenied) {
+                    Swal.fire('Haz clic en el nuevo punto del mapa para mover el marcador');
+                    if (tipo === "Inicio") markerInicio = null;
+                    else markerFinal = null;
+                    map.removeLayer(marker);
+                }
+            });
+        });
+
+        return marker;
+    }
+
+    map.on('click', function (e) {
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+        if (!validarCoordenadas(lat, lng)) {
+            alert("Coordenadas inválidas");
+            return;
+        }
+
+        if (!markerInicio) {
+            markerInicio = crearMarkerConOpciones(lat, lng, "Inicio");
+            document.getElementById("lat_inicio").value = lat;
+            document.getElementById("lng_inicio").value = lng;
+            latInicio = lat;
+            lngInicio = lng;
+        } else if (!markerFinal) {
+            markerFinal = crearMarkerConOpciones(lat, lng, "Final");
+            document.getElementById("lat_final").value = lat;
+            document.getElementById("lng_final").value = lng;
+            latFinal = lat;
+            lngFinal = lng;
+
+            if (routeControl) routeControl.remove();
+            routeControl = L.Routing.control({
+                waypoints: [L.latLng(latInicio, lngInicio), L.latLng(latFinal, lngFinal)],
+                routeWhileDragging: false,
+                addWaypoints: false,
+                draggableWaypoints: false,
+                createMarker: () => null
+            }).addTo(map);
+        }
+
+        validarFormulario();
+    });
+
+    const conductores = [
+        {% for camion in camiones %}
+        {
+            id: "{{ camion.id }}",
+            conductor: "{{ camion.conductor }}",
+            marca: "{{ camion.marca }}",
+            modelo: "{{ camion.modelo }}",
+            placa: "{{ camion.placa }}"
+        },
+        {% endfor %}
+    ];
+
+    const viajesActivos = [];
+
+    document.getElementById("start-btn").addEventListener('click', function () {
+        const camionSeleccionadoId = camionSelect.value;
+        const gasolinaInicioInput = document.getElementById("gasolina_inicio");
+        const gasolinaInicio = parseFloat(gasolinaInicioInput.value);
+        const capacidadTanque = parseFloat(camionSelect.options[camionSelect.selectedIndex].getAttribute('data-capacidad-tanque'));
+
+        if (gasolinaInicio > capacidadTanque) {
+            Swal.fire('Error', 'La gasolina inicial no puede ser mayor que la capacidad del tanque (' + capacidadTanque + ' litros).', 'error');
+            return;
+        }
+
+        Swal.fire({
+            title: '¿Simular con otro conductor?',
+            text: "¿Quieres simular el viaje con otro conductor disponible?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, elegir otro',
+            cancelButtonText: 'No, continuar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const otrosConductores = conductores.filter(c => c.id !== camionSeleccionadoId);
+                if (otrosConductores.length === 0) {
+                    Swal.fire('No hay otros conductores disponibles', '', 'info');
+                    iniciarSimulacionMultiple(camionSeleccionadoId);
+                    return;
+                }
+
+                let optionsHTML = '';
+                otrosConductores.forEach(c => {
+                    optionsHTML += `<option value="${c.id}">${c.conductor} - ${c.marca} ${c.modelo} (${c.placa})</option>`;
+                });
+
+                Swal.fire({
+                    title: 'Elige otro conductor',
+                    html: `<select id="conductorSelect" class="swal2-select" style="width: 100%">${optionsHTML}</select>`,
+                    confirmButtonText: 'Simular',
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancelar',
+                    preConfirm: () => {
+                        return document.getElementById('conductorSelect').value;
+                    }
+                }).then((seleccion) => {
+                    if (seleccion.isConfirmed) {
+                        iniciarSimulacionMultiple(seleccion.value);
+                    }
+                });
+
+            } else {
+                iniciarSimulacionMultiple(camionSeleccionadoId);
+            }
+        });
+    });
+
+function iniciarSimulacionMultiple(camionId) {
+    const camion = conductores.find(c => c.id === camionId);
+    if (!camion) {
+        Swal.fire('Error', 'Camión no encontrado', 'error');
+        return;
+    }
+
+    const tooltipText = `Conductor: ${camion.conductor}<br>Marca: ${camion.marca}<br>Modelo: ${camion.modelo}<br>Placa: ${camion.placa}`;
+
+    const vehicleIcon = L.icon({
+        iconUrl: 'https://svgsilh.com/svg/2386838.svg',
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+    });
+
+    const vehicleMarker = L.marker([latInicio, lngInicio], { icon: vehicleIcon })
+        .addTo(map)
+        .bindTooltip(tooltipText, { permanent: true, direction: 'top' })
+        .openTooltip();
+
+    const progressBarContainer = document.createElement('div');
+    progressBarContainer.classList.add('progress-bar');
+    const progressBarInner = document.createElement('div');
+    progressBarInner.classList.add('progress-bar-inner');
+    progressBarInner.style.width = '0%';
+    progressBarInner.innerText = `0% - ${camion.marca} ${camion.modelo}`;
+    progressBarContainer.appendChild(progressBarInner);
+    progressContainer.appendChild(progressBarContainer);
+
+    const tempRouteControl = L.Routing.control({
+        waypoints: [L.latLng(latInicio, lngInicio), L.latLng(latFinal, lngFinal)],
+        routeWhileDragging: false,
+        addWaypoints: false,
+        draggableWaypoints: false,
+        createMarker: () => null
+    });
+
+    tempRouteControl.on('routesfound', function (e) {
+        const latLngs = e.routes[0].coordinates;
+        const totalPoints = latLngs.length;
+        const distanceKm = L.latLng(latInicio, lngInicio).distanceTo(L.latLng(latFinal, lngFinal)) / 1000;
+
+        const velocidadKmH = Math.floor(Math.random() * (90 - 30 + 1)) + 30; // Velocidad aleatoria entre 30 y 90 km/h
+        const duracionSegundos = (distanceKm / velocidadKmH) * 3600;
+
+        let intervalTime = (duracionSegundos / totalPoints) * 1000;
+        if (intervalTime < 100) intervalTime = 100; // Intervalo mínimo para evitar que vaya demasiado rápido
+
+        let i = 0;
+        const interval = setInterval(function () {
+            if (i < totalPoints) {
+                vehicleMarker.setLatLng(latLngs[i]);
+                const progreso = (i / totalPoints) * 100;
+                progressBarInner.style.width = progreso + "%";
+                progressBarInner.innerText = Math.round(progreso) + "% - " + camion.marca + " " + camion.modelo;
+                i++;
+            } else {
+                clearInterval(interval);
+                Swal.fire('¡Ruta completada!',
+                    `El conductor ${camion.conductor}, a bordo del vehículo ${camion.marca} ${camion.modelo} (placa ${camion.placa}), ha llegado exitosamente a su destino.`,
+                    'success');
+
+                // Guardar el viaje de este vehículo
+                fetch("{% url 'guardar_ruta' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({
+                        camion_id: camionId,
+                        ruta: latLngs.map(p => ({ lat: p.lat, lng: p.lng })),
+                        gasolina_inicio: document.getElementById("gasolina_inicio").value
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status !== 'success') {
+                        console.error('Error al guardar la ruta:', data.message);
+                    }
+                })
+                .catch(err => console.error('Error:', err));
+            }
+        }, intervalTime);
+
+        viajesActivos.push({ camionId, vehicleMarker, interval, progressBarInner, progressBarContainer });
+        tempRouteControl.remove();
+    });
+
+    tempRouteControl.addTo(map);
+}
+
+</script>
+</body>
+</html>

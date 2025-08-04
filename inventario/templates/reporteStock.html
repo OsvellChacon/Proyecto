@@ -1,0 +1,105 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte Inventario</title>
+   
+    <style type="text/css">
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        @page{
+            size: a3;
+            margin: 15px;
+        }
+        .header {
+            display: flex;
+            width: 320px;
+            height: 120px;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo {
+            width: 250px;
+            height: 150px;
+            padding-bottom: 0px;            
+            text-align: center;
+        }
+        .table-container {
+            margin: 20px auto;
+            width: 80%;
+        }
+
+        .title {
+            font-size: 24px;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th {
+            background-color: rgb(0, 0, 0);
+            color: rgb(255, 255, 255);
+            text-align: center;
+            padding: 8px;
+        }
+
+        td {
+            padding: 4px 8px 4px 8px;
+            text-align: center;
+        }
+        .footer {
+            background-color: #f2f2f2;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{% static 'images/logo.png' %}" alt="logo" class="logo" />
+        <h2 class="title">Listado de Productos</h2>   
+    </div>
+        <div class="table-responsive">
+             <table class="table text-nowrap mb-0 align-middle">
+               <thead class="text-dark fs-4">
+                 <tr>
+                    <th>#</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Unidad</th>
+                    <th>Status</th>
+                    <th>Precio</th>
+                    <th>Categoria</th>
+                 </tr>
+               </thead>
+               <tbody>
+                {% for p in entity %}
+                <tr>
+                  <td>{{forloop.counter}}</td>
+                  <td>{{p.producto}}</td>
+                  <td>{{p.cantidad}}</td>
+                  <td>{{p.unidad}}</td>
+                  {% if p.cantidad >= 50 %}
+                  <td style="background-color: green; color: #f2f2f2;">Disponible</td>
+                  {% elif p.cantidad >= 1 %}
+                  <td style="background-color: darkgoldenrod; color: #f2f2f2;">Reabastecer</td>
+                  {% else %}
+                  <td style="background-color: red; color: #f2f2f2;">Agotado</td>
+                  {% endif %}
+                  <td>{{p.precio}}$</td>
+                  <td>{{p.categoria}}</td>
+                </tr>
+                {% endfor %}                     
+               </tbody>
+             </table>
+           </div>
+</body>
+</html>
+

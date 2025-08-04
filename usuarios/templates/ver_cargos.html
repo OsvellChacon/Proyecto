@@ -1,0 +1,80 @@
+{% extends 'dashmenu/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="main-panel">
+
+  <div class="content-wrapper">
+    <div class="col-lg-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          {% if messages %}
+            {% for m in messages %}
+              <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ m }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+          <div class="d-flex justify-content-end align-items-start">
+            <div class="input-group" style="width: auto;">
+              <form method="GET" action="{% url 'view_cargo' %}" class="form-inline my-2 my-lg-0">
+                <div class="form-group">
+                    <input type="text" name="q" class="form-control mr-sm-2" placeholder="Buscar cargo...">
+                </div>
+            </form>
+            </div>
+          </div>
+          <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Cargos</h4>
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Nombre</th>
+                        {% if perms.usuarios.change_cargos %}
+                        <th>Acciones</th>
+                        {% endif %}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for user in sukuna %}
+                        <tr>
+                          <td>{{ forloop.counter }}</td>
+                          <td>{{ user.Nombre }}</td>
+                          <td>
+                            {% if perms.usuarios.change_cargos %}
+                            <a href="{% url 'update_cargo' user.id %}">
+                              <button class="btn btn-warning"><i class="fa fa-undo" aria-hidden="true"></i></button>
+                            </a>
+                            {% endif %}
+                            {% if perms.usuarios.delete_cargos %}
+                            <a href="{% url 'delete_cargo' user.id %}">
+                              <button class="btn btn-danger btnEliminacion"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                            </a>
+                            {% endif %}
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                  <div>
+                    <center>{% include 'paginator.html' %}</center>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center mt-2 flex-wrap">
+            {% if perms.usuarios.add_cargos %}
+            <a href="{% url 'create_cargo' %}"><button class="btn btn-primary btn-lg m-2">Crear Cargo</button></a>
+            {% endif %}
+        </div>
+        </div>
+      </div>
+  </div>
+
+{% endblock %}

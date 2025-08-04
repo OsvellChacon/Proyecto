@@ -1,0 +1,78 @@
+{% extends 'dashmenu/main.html' %}
+
+{% block content %}
+<div class="main-panel">
+
+  <div class="content-wrapper">
+    <div class="col-lg-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          {% if messages %}
+          {% for m in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{m}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>         
+          {% endfor %}
+      {% endif %}
+          <div class="d-flex justify-content-end align-items-start">
+            <div class="input-group" style="width: auto;">
+              <form method="GET" action="{% url 'bodegas' %}" class="form-inline my-2 my-lg-0">
+                <div class="form-group">
+                    <input type="text" name="q" class="form-control mr-sm-2" placeholder="Buscar Bodegas...">
+                </div>
+            </form>
+            </div>
+          </div>
+          <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Gestion Bodegas</h4>
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Nombre</th>
+                            <th>Ubicacion</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if bodegas %}
+                          {% for p in bodegas %}
+                          <tr>
+                            <td>{{p.codigo}}</td>
+                            <td>{{p.nombre}}</td>
+                            <td>{{p.ubicacion}}</td>
+                            <td>
+                              <div>
+                                <a href="{% url 'verBodega' p.id %}"><button class="btn btn-success"><i class="fa fa-eye"></i></button></a>
+                                <a href="{% url 'actualizar_bodega' p.id %}"><button class="btn btn-warning"><i class="fa fa-undo"></i></button></a>
+                                <a href="{% url 'eliminar_bodega' p.id %}"><button class="btn btn-danger btnEliminacion"><i class="fa fa-trash"></i></button></a>
+                              </div>
+                            </td>
+                          </tr>
+                          {% endfor %}
+                        {% else %}
+                          <tr>
+                            <td colspan="4">No Hay Bodegas Registradas</td>
+                          </tr>
+                        {% endif %}
+                    </tbody>
+                  </table>
+                <div>
+                    <center>{% include 'paginator.html' %}</center>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center mt-2 flex-wrap">
+            <a href="{% url 'agregar_bodega' %}"><button class="btn btn-primary btn-lg m-2">Registrar Bodega</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

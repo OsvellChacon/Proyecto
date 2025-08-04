@@ -1,0 +1,99 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de transaccion: {{producto.producto}}</title>
+   
+    <style type="text/css">
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        @page{
+            size: a3;
+            margin: 15px;
+        }
+        .header {
+            display: flex;
+            width: 320px;
+            height: 120px;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo {
+            width: 250px;
+            height: 150px;
+            padding-bottom: 0px;            
+            text-align: center;
+        }
+        .table-container {
+            margin: 20px auto;
+            width: 80%;
+        }
+
+        .title {
+            font-size: 24px;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th {
+            background-color: rgb(0, 0, 0);
+            color: rgb(255, 255, 255);
+            text-align: center;
+            padding: 8px;
+        }
+
+        td {
+            padding: 4px 8px 4px 8px;
+            text-align: center;
+        }
+        .footer {
+            background-color: #f2f2f2;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2 class="title">Reporte de Transacciones: ({{producto.producto}})</h2>   
+    </div>
+        <div class="table-responsive">
+             <table class="table text-nowrap mb-0 align-middle">
+               <thead class="text-dark fs-4">
+                 <tr>
+                    <th>#</th>
+                    <th>Transaccion</th>
+                    <th>Cantidad</th>
+                    <th>Fecha</th>
+                 </tr>
+               </thead>
+               <tbody>
+                {% for transaccion in transacciones %}
+                <tr>
+                  {% if transaccion.tipo == 'ENTRADA' %}
+                  <td style="background-color: #4B49AC; color: #ffffff;">{{forloop.counter}}</td>
+                  <td style="background-color: #4B49AC; color: #ffffff;">{{transaccion.tipo}}</td>
+                  <td style="background-color: #4B49AC; color: #ffffff;">{{transaccion.cantidad}}</td>
+                  <td style="background-color: #4B49AC; color: #ffffff;">{{transaccion.fecha}}</td>
+                {% else %}
+                <td style="background-color: cornflowerblue; color: #000;">{{forloop.counter}}</td>
+                <td style="background-color: cornflowerblue; color: #000;">{{transaccion.tipo}}</td>
+                <td style="background-color: cornflowerblue; color: #000;">{{transaccion.cantidad}}</td>
+                <td style="background-color: cornflowerblue; color: #000;">{{transaccion.fecha}}</td>                          
+                  {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+             </table>
+           </div>
+</body>
+</html>
+

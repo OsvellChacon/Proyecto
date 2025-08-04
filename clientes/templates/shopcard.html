@@ -1,0 +1,71 @@
+{% extends 'dashmenu/main.html' %}
+{% block content %}
+<div class="container">
+    <div class="main-body">
+          <div class="row gutters-sm">
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex flex-column align-items-center text-center">
+                    <!-- Icono de empresa en vez de imagen de usuario -->
+                    <span class="fa fa-building fa-5x text-secondary" aria-hidden="true"></span>
+                    <div class="mt-3">
+                      <h4>{{cliente.Cliente}}
+                      <p class="text-secondary mb-1">{{cliente.RIF}}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>          
+            </div>
+            <div class="col-md-8">
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Nombre</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{cliente.Cliente}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">RIF</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{cliente.RIF}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Direccion</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{cliente.Direccion}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Estatus</h6>
+                    </div>
+                    {% if cliente.Status %}
+                    <div class="col-sm-9 text-success">
+                      Activo
+                    </div>
+                    {% else %}
+                    <div class="col-sm-9 text-danger">
+                      Inactivo
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>              
+            </div>
+          </div>
+
+        </div>
+    </div>
+{% endblock %}

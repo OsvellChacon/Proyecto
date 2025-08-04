@@ -1,0 +1,431 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Oseed - Solicitudes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'estilos/bootstrap.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'estilos/font-awesome.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'estilos/elegant-icons.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'estilos/nice-select.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'estilos/jquery-ui.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'estilos/owl.carousel.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'estilos/slicknav.min.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'estilos/style.css' %}" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" integrity="sha512-GRf/CaLDUgq8ENj9tibd56XvhQpMoe9CxHf2H3hZxheC3Zu+7khE1SjF3mPQxiiT5Bxy5ZefRTSXx3fvf4cLUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .modal {
+            display: none; /* Oculta la modal por defecto */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4); /* Fondo oscuro con opacidad */
+            padding-top: 60px; /* Espaciado superior */
+        }
+    
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+    
+        /* Botón para cerrar la modal */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+    
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+    
+</head>
+
+<body>
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+
+    <div class="humberger__menu__overlay"></div>
+    <div class="humberger__menu__wrapper">
+        <div class="humberger__menu__logo">
+                    <a class="navbar-brand brand-logo mr-5" href="{% url 'dashboard' %}">PREMOR II</a>
+        <a class="navbar-brand brand-logo-mini" href="{% url 'dashboard' %}">PREMOR II</a>
+        </div>
+        <div class="humberger__menu__cart">
+            <ul>
+                <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
+                <li><a href="{% url 'ver_carrito' %}"><i class="fa fa-shopping-bag"></i> <span>{{ cantidad_productos }}</span></a></li>
+            </ul>
+            <div class="header__cart__price">item: <span>$00.00</span></div>
+        </div>
+        <div class="humberger__menu__widget">
+            <div class="header__top__right__auth">
+                <a href="#"><i class="fa fa-user"></i> {% if user.is_authenticated %} {{user.username}} {% endif %}</a>
+            </div>
+        </div>
+        <nav class="humberger__menu__nav mobile-menu">
+            <ul>
+                <li class="active"><a href="./index.html">Inicio</a></li>
+                <li><a href="./shop-grid.html">Categorias</a></li>
+                <li><a href="#">Detalles</a>
+                    <ul class="header__menu__dropdown">
+                        <li><a href="./shop-details.html">Detalles de compra</a></li>
+                        <li><a href="./shoping-cart.html">Carrito</a></li>
+                        <li><a href="./checkout.html">Finalizar Compra</a></li>
+                    </ul>
+                </li>
+                <li><a href="./contact.html">Contacto</a></li>
+            </ul>
+        </nav>
+        <div id="mobile-menu-wrap"></div>
+    </div>
+    <header class="header">
+        <div class="header__top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="header__top__left">
+                            <ul>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="header__top__right">
+                            <div class="header__top__right__auth">
+                                <a href="#"><i class="fa fa-user"></i> {% if user.is_authenticated %} {{user.username}} {% endif %}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="header__logo">
+                        <a href="./index.html"><img src="{% static 'images/logo.svg' %}" alt=""></a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <nav class="header__menu">
+                        <ul>
+                            <li class="active"><a href="{% url 'solicitudes' %}">Inicio</a></li>
+                            <li><a href="#">Categorias</a></li>
+                            <li><a href="#">Detalles</a>
+                                <ul class="header__menu__dropdown">
+                                    <li><a href="./shop-details.html">Detalles de compra</a></li>
+                                    <li><a href="./shoping-cart.html">Carrito</a></li>
+                                    <li><a href="./checkout.html">Finalizar Compra</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="./contact.html">Contacto</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-lg-3">
+                    <div class="header__cart">
+                        <ul>
+                            <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
+                            <li><a href="{% url 'ver_carrito' %}"><i class="fa fa-shopping-bag"></i> <span>{{ cantidad_productos }}</span></a></li>
+                        </ul>
+                        <div class="header__cart__price">item: <span>$00.00</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="humberger__open">
+                <i class="fa fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <section class="hero">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="hero__categories">
+                        <div class="hero__categories__all">
+                            <i class="fa fa-bars"></i>
+                            <span>Categorias</span>
+                        </div>
+                        <ul>
+                            {% for c in categorias %}
+                                <li><a href="#">{{c.nombre}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="hero__search">
+                        <div class="hero__search__form">
+                            <form action="#">
+                                <div class="hero__search__categories">
+                                    Productos
+                                    <span class="arrow_carrot-down"></span>
+                                </div>
+                                <input type="text" placeholder="¿Que deseas buscar?">
+                                <button type="submit" class="site-btn">Buscar</button>
+                            </form>
+                        </div>
+                        <div class="hero__search__phone">
+                            <div class="hero__search__phone__icon">
+                                <a href="https://wa.me/+584147080725" target="_blank" style="text-decoration: none;"><i class="fa fa-phone"></i></a>
+                            </div>
+                            <div class="hero__search__phone__text">
+                                <h5>+58 414-7080725</h5>
+                                <span>Soporte 24/7</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="breadcrumb-section set-bg" data-setbg="{% static 'images/breadcrumb.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>Shopping Cart</h2>
+                        <div class="breadcrumb__option">
+                            <a href="./index.html">Home</a>
+                            <span>Shopping Cart</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="shoping-cart spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="shoping__cart__table">
+                        <!-- carrito.html -->
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="shoping__product">Productos</th>
+                                    <th>Precio</th>
+                                    <th>Cantidad</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in carrito %}
+                                <tr id="item-{{ item.producto.id }}" data-producto-id="{{ item.producto.id }}" data-precio="{{ item.producto.precio }}">
+                                        <td class="shoping__cart__item">
+                                            <!-- Puedes usar la información del producto, como la imagen, si está disponible -->
+                                            <h5>{{ item.producto.producto }}</h5>
+                                        </td>
+                                        <td class="shoping__cart__price" data-precio="{{ item.producto.precio }}">
+                                            ${{ item.producto.precio }}
+                                        </td>
+                                        <td class="shoping__cart__quantity">
+                                            <div class="quantity">
+                                                <div class="pro-qty">
+                                                    <span class="icon_adjust" onclick="ajustarCantidad('{{ item.producto.id }}', 'restar')">-</span>
+                                                    <input type="text" class="cantidad-input" value="{{ item.cantidad }}" min="1">
+                                                    <span class="icon_adjust" onclick="ajustarCantidad('{{ item.producto.id }}', 'sumar')">+</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <td class="shoping__cart__total">
+                                            <span class="subtotal" data-subtotal="{{ item.subtotal }}">{{ item.subtotal }}</span>
+                                        </td>
+                                        <td class="shoping__cart__item__close">
+                                            <a href="{% url 'eliminar_producto_carrito' item.producto.id %}" style="text-decoration: none; color: #b2b2b2;" class="icon_close"></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="shoping__cart__btns">
+                        <a href="{% url 'solicitudes' %}" class="primary-btn">Continuar Comprando</a>
+                        <form method="post" action="{% url 'vaciar_carrito' %}" class="cart-form">
+                            {% csrf_token %}
+                            <button type="submit" class="primary-btn cart-btn cart-btn-right" name="vaciar_carrito">
+                                <span class="icon_loading"></span> Vaciar Carrito
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="shoping__checkout">
+                        <h5>Total en Carrito</h5>
+                        <ul>
+                            <li>Total <span class="total-carrito" style="color: green;">$0.00</span></li>
+                        </ul>
+                            <button type="submit" class="primary-btn" id="btnConfirmarCompra"><a href="javascript:void(0);" onclick="abrirModal()" class="primary-btn">Confirmar Compra</a></button>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="confirmarCompraModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="cerrarModal()">&times;</span>
+                <form id="confirmarCompraForm" method="post" action="{% url 'confirmar_compra' %}">
+                    {% csrf_token %}
+                    <h2>Resumen de Compra</h2>
+                    <hr>
+                    <h3>Productos:</h3>
+                    {% for item in carrito %}
+                        <p>{{ item.producto.producto }}: {{ item.cantidad }} --> ${{ item.subtotal }}</p>
+                    {% endfor %}
+                    <p>__________________________</p>
+                    <p>Usuario Encargado: {% if user.is_authenticated %}{{ user.username }}{% else %}Invitado{% endif %}</p>
+                    <p>Fecha y Hora: {{ fecha_y_hora_actual_formateada }}</p>
+                    {{ factura_form.as_p }}
+                    <p>Total: ${{ total_carrito }}</p>
+                
+                    <button type="submit">Finalizar Compra</button>
+                    <button type="button" onclick="cerrarModal()">Cancelar</button>
+                </form>
+            </div>
+        </div>       
+        
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function abrirModal() {
+        document.getElementById('confirmarCompraModal').style.display = 'block';
+    }
+
+    function cerrarModal() {
+        document.getElementById('confirmarCompraModal').style.display = 'none';
+    }
+
+    function confirmarCompra() {
+        $.ajax({
+            type: 'POST',
+            url: '{% url "confirmar_compra" %}',  // Asegúrate de que esta URL sea la correcta
+            data: {},
+            success: function (response) {
+                cerrarModal();
+                // Puedes realizar otras acciones después de confirmar la compra si es necesario
+            },
+            error: function (error) {
+                // Manejar errores si es necesario
+                console.log(error);
+            }
+        });
+    }
+</script>
+
+    </section>
+    <footer class="footer spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="footer__copyright">
+                        <div class="footer__copyright__text"><p>
+  Copyright &copy;<script>document.write(new Date().getFullYear());</script> Todos los derechos reservados TechnOS
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="{% static 'javascript/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'javascript/bootstrap.min.js' %}"></script>
+    <script src="{% static 'javascript/jquery.nice-select.min.js' %}"></script>
+    <script src="{% static 'javascript/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'javascript/jquery.slicknav.js' %}"></script>
+    <script src="{% static 'javascript/mixitup.min.js' %}"></script>
+    <script src="{% static 'javascript/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'javascript/main.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-ojNv0mY0MFRUjBdF7TepLkRYl3+r9sJr6U5dh5A9C0=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-giboksaAdzFyprdkVypEJJ3yqbhcZE03U8z7/17QstL3j9c9e5D8d7W1Zc6Ckb6/Zk3OI/2e7Sfuq+XSV/G8fQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        $(document).ready(function () {
+            $('.cantidad-input').on('input', function () {
+                var fila = $(this).closest('tr');
+                var precio = parseFloat(fila.find('.shoping__cart__price').attr('data-precio'));
+                var cantidad = parseInt($(this).val());
+                var subtotal = precio * cantidad;
+        
+                // Actualiza el subtotal en el HTML
+                fila.find('.subtotal').text('$' + subtotal.toFixed(2));
+            });
+        });
+        </script>
+<script>
+    $(document).ready(function () {
+        // Manejar el evento de cambio en la cantidad-input
+        $('.cantidad-input').on('input', function () {
+            // Obtener el ID del producto
+            var productoId = $(this).closest('tr').attr('data-producto-id');
+            // Obtener la nueva cantidad
+            var nuevaCantidad = $(this).val();
+    
+            // Realizar la actualización de los totales y enviar la solicitud AJAX
+            actualizarTotales(productoId, nuevaCantidad);
+        });
+    
+        // Función para actualizar los totales y estilos
+        function actualizarTotales(productoId, nuevaCantidad) {
+            // código omitido para la brevedad
+        }
+    
+        // Llamada inicial para configurar los totales al cargar la página
+        actualizarTotales();
+    });
+    </script>
+<script>
+    function ajustarCantidad(productoId, operacion) {
+        var inputCantidad = $('#item-' + productoId + ' .cantidad-input');
+        var cantidad = parseInt(inputCantidad.val());
+    
+        if (operacion === 'sumar') {
+            cantidad++;
+        } else if (operacion === 'restar' && cantidad > 1) {
+            cantidad--;
+        }
+    
+        inputCantidad.val(cantidad);
+        inputCantidad.trigger('input'); // Disparar el evento de input para actualizar totales
+    }
+    </script>
+<script>
+    $(document).ready(function () {
+        $('.cantidad-input').on('input', function () {
+            var fila = $(this).closest('tr');
+            var precio = parseFloat(fila.find('.shoping__cart__price').attr('data-precio'));
+            var cantidad = parseInt($(this).val());
+            var subtotal = precio * cantidad;
+            fila.find('.subtotal').text('$' + subtotal.toFixed(2));
+    
+            // Almacenar la información del producto actualizado en el localStorage
+            var productoActualizado = {
+                producto: fila.find('h5').text(),
+                cantidad: cantidad
+            };
+            localStorage.setItem('productoActualizado', JSON.stringify(productoActualizado));
+        });
+    });
+    </script>                    
+    </body>
+    </html>
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #mapaRutaFull { height: 90vh; width: 100%; }
+    </style>
+</head>
+<body>
+    <h3 style="text-align:center;">{{ page_title }}</h3>
+    <div id="mapaRutaFull"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var mapa = L.map('mapaRutaFull').setView([10.5, -66.9], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(mapa);
+
+        var ruta = {{ ruta|safe }};
+        if (ruta && ruta.length > 0) {
+            var latlngs = ruta.map(function(p) { return [p.lat, p.lng]; });
+            var polyline = L.polyline(latlngs, {color: 'blue', weight: 5}).addTo(mapa);
+            mapa.fitBounds(polyline.getBounds());
+            // Marcadores de inicio y fin
+            L.marker(latlngs[0], {icon: L.icon({iconUrl: 'https://cdn-icons-png.flaticon.com/512/447/447031.png', iconSize: [25, 40], iconAnchor: [12, 40]})}).addTo(mapa);
+            L.marker(latlngs[latlngs.length-1], {icon: L.icon({iconUrl: 'https://cdn-icons-png.flaticon.com/512/447/447038.png', iconSize: [25, 40], iconAnchor: [12, 40]})}).addTo(mapa);
+        }
+    </script>
+</body>
+</html>

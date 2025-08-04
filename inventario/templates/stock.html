@@ -1,0 +1,115 @@
+{% extends 'dashmenu/main.html' %}
+
+{% block content %}
+<div class="main-panel">
+
+  <div class="content-wrapper">
+    <div class="col-lg-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          {% if messages %}
+          {% for m in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{m}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>         
+          {% endfor %}
+      {% endif %}
+          <div class="d-flex justify-content-end align-items-start">
+            <div class="input-group" style="width: auto;">
+              <form method="GET" action="{% url 'inventario_general' %}" class="form-inline my-2 my-lg-0">
+                <div class="form-group">
+                    <input type="text" name="q" class="form-control mr-sm-2" placeholder="Buscar producto...">
+                </div>
+            </form>
+            </div>
+          </div>
+          <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Inventario General</h4>
+                <div class="table-responsive">
+                  <table class="table table-hover text-center">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th><a href="{% url 'addUnidad' %}" style="text-decoration: none; color: #000;">Unidad</a></th>
+                            <th>Status</th>
+                            <th>Precio</th>
+                            <th>Categoria</th>
+                            <th>Detalles</th>
+                            {% if perms.inventario.change_stock %}
+                            <th>Acciones</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in stock %}
+                        <tr>
+                            <td>{{forloop.counter}}</td>
+                            <td>
+                            {% if p.cantidad == 0 %}
+                              <span class="alert alert-danger" style="margin: 0.5rem;">
+                                ¡Atención! El producto {{ p.producto }} se ha agotado.
+                              </span>
+                          {% elif p.cantidad <= p.existencia_min %}
+                              <span class="alert alert-warning" style="margin: 0.5rem;">
+                                ¡Atención! El producto {{ p.producto }} ha alcanzado su existencia mínima.
+                              </span>
+                          {% else %}
+                            {{p.producto}}
+                          {% endif %}
+                        </td>                       
+                            <td>{{p.cantidad}}</td>
+                            <td>{{p.unidad}}</td>
+                            {% if p.cantidad >= p.existencia_min %}
+                            <td><label class="badge badge-success">Disponible</label></td>
+                            {% elif p.cantidad >= 1 %}
+                            <td><label class="badge badge-warning">Reabastecer</label></td>
+                            {% else %}
+                            <td><label class="badge badge-danger">Agotado</label></td>
+                            {% endif %}
+                            <td>{{p.precio}}$</td>
+                            <td>{{p.categoria}}</td>
+                            {% if perms.inventario.view_stock %}
+                            <td>
+                              <a href="{% url 'producto_transacciones' p.id %}">
+                                <button class="btn btn-success"><i class="fa fa-eye" aria-hidden="true"></i></button>
+                              </a>
+                          </td>
+                          {% endif %}
+                            <td>
+                                <div>
+                                  {% if perms.inventario.change_stock %}
+                                    <a href="{% url 'uptProduct' p.id %}"><button class="btn btn-warning"><i class="fa fa-undo" aria-hidden="true"></i></button></a>
+                                    {% endif %}
+                                    {% if perms.inventario.delete_stock %}
+                                    <a href="{% url 'dltProduct' p.id %}"><button class="btn btn-danger btnEliminacion"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                  </table>
+                <div>
+                    <center>{% include 'paginator.html' %}</center>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-center mt-2 flex-wrap">
+            <a href="{% url 'excel_stock' %}" target="_blank"><button class="btn btn-success btn-lg m-2">Generar Excel</button></a>
+            <a href="{% url 'pdf_stock' %}" target="_blank"><button class="btn btn-danger btn-lg m-2">Generar PDF</button></a>
+            {% if perms.inventario.add_stock %}
+            <a href="{% url 'addProducto' %}"><button class="btn btn-primary btn-lg m-2">Registrar Productos</button></a>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

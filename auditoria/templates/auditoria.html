@@ -1,0 +1,75 @@
+{% extends 'dashmenu/main.html' %}
+
+{% block content %}
+<div class="main-panel">
+
+  <div class="content-wrapper">
+    <div class="col-lg-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          {% if messages %}
+          {% for m in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{m}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>         
+          {% endfor %}
+      {% endif %}
+          <div class="d-flex justify-content-end align-items-start">
+            <div class="input-group" style="width: auto;">
+              <form method="GET" action="{% url 'inventario_general' %}" class="form-inline my-2 my-lg-0">
+                <div class="form-group">
+                    <input type="text" name="q" class="form-control mr-sm-2" placeholder="Realizar Busqueda">
+                </div>
+            </form>
+            </div>
+          </div>
+          <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Auditoría</h4>
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Fecha y Hora</th>
+                                <th>Modulo</th>
+                                <th>Objeto</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs %}
+                            <tr>
+                                <td>{{ log.actor.username }}</td>
+                                <td>{{ log.timestamp }}</td>
+                                <td>{{ log.content_type.app_label }}</td> <!-- Aquí se muestra el nombre de la aplicación -->
+                                <td>{{ log.object_repr }}</td>
+                                <td>
+                                  {% if log.action == 0 %}
+                                      <span class="alert alert-success" style="margin: 0.5rem;">Creado</span>
+                                  {% elif log.action == 1 %}
+                                      <span class="alert alert-primary" style="margin: 0.5rem;">Actualizado</span>
+                                  {% elif log.action == 2 %}
+                                      <span class="alert alert-danger" style="margin: 0.5rem;">Eliminado</span>
+                                  {% endif %}
+                              </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+
+                    </div>
+                </div>
+                <div>
+                  <center>{% include 'paginator.html' %}</center>
+              </div>
+            </div>
+        </div>        
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

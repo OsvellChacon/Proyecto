@@ -1,0 +1,24 @@
+{% extends 'dashmenu/main.html' %}
+{% load crispy_forms_filters %} 
+{% load crispy_forms_tags %} 
+
+{% block content %}
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Actualizar Unidad</h4>
+          <form action="" method="post" enctype="multipart/form-data" class="forms-sample">
+            <div class="form-group">
+              {% csrf_token %}
+              {{form | crispy}}
+            </div>
+            <button type="submit" class="btn btn-primary mr-2">Actualizar Unidad</button>
+            <a href="{% url 'addUnidad' %}" class="btn btn-outline-light">Cancelar</a>
+          </form>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

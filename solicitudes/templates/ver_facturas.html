@@ -1,0 +1,217 @@
+{% extends 'dashmenu/main.html' %}
+{% block content %}
+<div class="main-panel">
+
+  <div class="content-wrapper">
+    <div class="col-lg-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          {% if messages %}
+          {% for m in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{m}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>         
+          {% endfor %}
+      {% endif %}
+          <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Ultimas Solicitudes</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Fecha de Solicitud</th>
+                                <th>Usuario Encargado</th>
+                                <th>Tienda</th>
+                                <th>Cliente</th>
+                                <th>Status</th>
+                                <th>Total</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for factura in facturas %}
+                            <tr id="factura_{{ factura.id }}">
+                                <td>{{ factura.fecha_creacion }}</td>
+                                <td>{{ factura.usuario }}</td>
+                                <td>{{ factura.tienda }}</td>
+                                <td>{{ factura.cliente }}</td>
+                                {% if factura.status %}
+                                    <td><label class="badge badge-success">Entregado</label></td>
+                                {% else %}
+                                    <td><label class="badge badge-warning">En Proceso...</label></td>
+                                {% endif %}
+                                <td style="color: green;">{{ factura.total }}$</td>
+                                <td class="acciones">
+                                    <button class="btn btn-success check-btn" data-factura-id="{{ factura.id }}"><i class="fa fa-check" aria-hidden="true"></i></button>
+                                    <a class="imprimir-link" data-factura-id="{{ factura.id }}"><button class="btn btn-primary"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></button></a>
+                                    <a class="eliminar-link" data-factura-id="{{ factura.id }}"><button class="btn btn-danger btnEliminacion"><i class="fa fa-trash" aria-hidden="true"></i></button></a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+                    <!-- Modal -->
+                    <div class="modal" id="statusModal">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Cambiar Estado de Factura</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="statusForm">
+                                        {% csrf_token %}
+                                        <input type="hidden" id="facturaId" name="factura_id">
+                                        <label for="status">Estado:</label>
+                                        <select id="status" name="status" class="form-control">
+                                            <option value="True">Entregado</option>
+                                            <option value="False">En Proceso...</option>
+                                        </select>
+                                        <br>
+                                        <button type="submit" class="btn btn-primary">Guardar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div>
+                    <center>{% include 'paginator.html' %}</center>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+    <script>
+        function imprimirFactura(facturaId) {
+            var acciones = document.querySelectorAll('.acciones');
+            acciones.forEach(function(accion) {
+                accion.style.display = 'none';
+            });
+
+            var contenido = document.getElementById('factura_' + facturaId).cloneNode(true);
+            var accionesClonadas = contenido.querySelectorAll('.acciones');
+            accionesClonadas.forEach(function(accion) {
+                accion.parentNode.removeChild(accion);
+            });
+
+            var ventana = window.open('', '', 'height=400,width=600');
+            ventana.document.write('<html><head><title>Factura</title></head><body>');
+            ventana.document.write('<div class="factura">' + contenido.innerHTML + '</div>');
+            ventana.document.write('</body></html>');
+
+            setTimeout(function() {
+                ventana.print();
+                ventana.close();
+                acciones.forEach(function(accion) {
+                    accion.style.display = '';
+                });
+            }, 1000);
+        }
+
+        var eliminarFacturaUrl = "{% url 'eliminar_factura' factura_id=0 %}";
+
+        function eliminarFactura(facturaId) {
+            if (confirm("¿Estás seguro de que deseas eliminar esta factura?")) {
+                var xhr = new XMLHttpRequest();
+                var url = eliminarFacturaUrl.replace('0', facturaId);
+                xhr.open("POST", url, true);
+
+                var csrftoken = getCookie('csrftoken');
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        document.getElementById('factura_' + facturaId).remove();
+                    } else {
+                        console.error('Error al eliminar la factura');
+                    }
+                };
+
+                xhr.onerror = function() {
+                    console.error('Error de red');
+                };
+
+                xhr.send();
+            }
+        }
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var imprimirLinks = document.querySelectorAll('.imprimir-link');
+            imprimirLinks.forEach(function(link) {
+                link.addEventListener('click', function() {
+                    var facturaId = this.dataset.facturaId;
+                    imprimirFactura(facturaId);
+                });
+            });
+
+            var eliminarLinks = document.querySelectorAll('.eliminar-link');
+            eliminarLinks.forEach(function(link) {
+                link.addEventListener('click', function() {
+                    var facturaId = this.dataset.facturaId;
+                    eliminarFactura(facturaId);
+                });
+            });
+        });
+    </script>
+                        
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+                        <script>
+                            $(document).ready(function () {
+                                $(".check-btn").click(function () {
+                                    var facturaId = $(this).data("factura-id");
+                                    $("#facturaId").val(facturaId);
+                                    $("#statusModal").modal("show");
+                                });
+                        
+                                $("#statusForm").submit(function (event) {
+                                    event.preventDefault();
+                                    var formData = $(this).serialize();
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "{% url 'cambiar_estado_factura' %}",  // Actualiza la URL aquí
+                                        data: formData,
+                                        success: function (response) {
+                                            if (response.success) {
+                                                $("#statusModal").modal("hide");
+                                                location.reload(); // Actualizar la página después de cerrar el modal
+                                            } else {
+                                                alert("Hubo un error al cambiar el estado de la factura: " + response.error);
+                                            }
+                                        },
+                                        error: function (xhr, textStatus, errorThrown) {
+                                            alert("Hubo un error de AJAX al cambiar el estado de la factura.");
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
+                        
+                                             
+                        
+{% endblock %}
+
+
+

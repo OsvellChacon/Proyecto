@@ -1,0 +1,78 @@
+{% extends 'dashmenu/main.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Actualizar Vehiculo</h4>
+          <form action="" method="post" class="forms-sample" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.conductor.label_tag }}
+                  {{ form.conductor|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.placa.label_tag }}
+                  {{ form.placa|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.marca.label_tag }}
+                  {{ form.marca|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.modelo.label_tag }}
+                  {{ form.modelo|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.color.label_tag }} <!-- Asegúrate de que este campo está en tu formulario -->
+                  {{ form.color|add_class:"form-control" }}
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.year.label_tag }} <!-- Asegúrate de que este campo está en tu formulario -->
+                  {{ form.year|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.capacidad_tanque.label_tag }} <!-- Asegúrate de que este campo está en tu formulario -->
+                  {{ form.capacidad_tanque|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary mr-2">Actualizar Vehiculo</button>
+            <a href="{% url 'vista_vehiculos' %}" class="btn btn-light">Cancelar</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

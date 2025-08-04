@@ -1,0 +1,271 @@
+{% extends 'dashmenu/main.html' %}
+{% block content %}
+<div class="container">
+    <div class="main-body">
+          <div class="row gutters-sm">
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex flex-column align-items-center text-center">
+                    <img src="{{cliente.conductor.imagen_perfil.url}}" alt="{{ cliente.conductor.username }}" class="rounded-circle" width="150">
+                    <div class="mt-3">
+                      <h4>{{cliente.conductor.nombre}} {{cliente.conductor.apellido}}</h4>
+                      <p class="text-secondary mb-1">{{cliente.Tienda}}</p>
+                      <a href="https://wa.me/{{cliente.conductor.telefono}}" target="_blank"><button class="btn btn-success">Whatsapp</button></a>
+                    </div>
+                  </div>
+                </div>
+              </div>          
+            </div>
+            <div class="col-md-8">
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Placa</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{cliente.placa}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Marca</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{cliente.marca}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Modelo</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{cliente.modelo}} - {{cliente.year}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Color</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      {{cliente.color}}
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Capacidad del Tanque</h6>
+                    </div>
+                    <div class="col-sm-3 text-secondary">
+                      {{cliente.capacidad_tanque}} Litros
+                    </div>
+                  </div>
+                  <hr>
+                </div>
+              </div>              
+            </div>
+          </div>
+          <!-- Historial de viajes -->
+          <div class="row gutters-sm">
+            <div class="col-12 d-flex justify-content-center">
+              <div class="card mb-3 w-100" style="max-width: 1200px; margin: auto;">
+                <div class="card-body">
+                  <!-- Alertas -->
+                  {% if alertas %}
+                    <div class="mb-3">
+                      {% for alerta in alertas %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                          <i class="fa fa-exclamation-triangle"></i> {{ alerta }}
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                  <!-- Tarjeta de estadísticas avanzadas -->
+                  <div class="mb-4">
+                    <div class="row text-center">
+                      <div class="col-md-2 col-6 mb-2">
+                        <div class="card shadow-sm">
+                          <div class="card-body py-2">
+                            <h6 class="mb-1 text-muted">Total Km</h6>
+                            <span class="badge fs-5">{{ estadisticas.total_km }} km</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2 col-6 mb-2">
+                        <div class="card shadow-sm">
+                          <div class="card-body py-2">
+                            <h6 class="mb-1 text-muted">Consumo Total</h6>
+                            <span class="badge text-dark fs-5">{{ estadisticas.total_gasolina }} L</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2 col-6 mb-2">
+                        <div class="card shadow-sm">
+                          <div class="card-body py-2">
+                            <h6 class="mb-1 text-muted">Prom. Duración</h6>
+                            <span class="badge text-dark fs-5">{{ estadisticas.promedio_duracion }} min</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-2 col-6 mb-2">
+                        <div class="card shadow-sm">
+                          <div class="card-body py-2">
+                            <h6 class="mb-1 text-muted">Viajes</h6>
+                            <span class="badge fs-5">{{ estadisticas.total_viajes }}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-12 mb-2">
+                        <div class="card shadow-sm">
+                          <div class="card-body py-2">
+                            <h6 class="mb-1 text-muted">Eficiencia (Km/L)</h6>
+                            <span class="badge fs-5">{{ estadisticas.eficiencia }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 text-end">
+                    <a href="{% url 'exportar_historial_excel' cliente.id %}" class="btn btn-outline-primary btn-sm">
+                      <i class="fa fa-file-excel-o"></i> Exportar a Excel
+                    </a>
+                  </div>
+                  {% if viajes_info %}
+                  <div class="table-responsive" style="width:100%; max-width:1150px; margin:auto;">
+                    <table class="table table-bordered table-hover align-middle mb-0" style="font-size: 1rem;">
+                      <thead class="table-dark">
+                        <tr>
+                          <th scope="col" style="min-width:110px;"><i class="fa fa-calendar"></i> Fecha</th>
+                          <th scope="col" style="min-width:220px;"><i class="fa fa-map-marker"></i> Dirección Inicio</th>
+                          <th scope="col" style="min-width:220px;"><i class="fa fa-map-marker"></i> Dirección Fin</th>
+                          <th scope="col" style="min-width:90px;"><i class="fa fa-road"></i> Km viaje</th>
+                          <th scope="col" style="min-width:110px;"><i class="fa fa-tachometer"></i> Gasolina Inicio</th>
+                          <th scope="col" style="min-width:110px;"><i class="fa fa-tachometer"></i> Gasolina Fin</th>
+                          <th scope="col" style="min-width:90px;"><i class="fa fa-percent"></i> % Ahorrado</th>
+                          <th scope="col" style="min-width:90px;"><i class="fa fa-clock-o"></i> Duración</th>
+                          <th scope="col" style="min-width:90px;">Ruta</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for info in viajes_info %}
+                        <tr class="table-light" style="transition: background 0.2s;">
+                          <td><span class="fw-bold">{{ info.obj.fecha_viaje|date:"d/m/Y H:i" }}</span></td>
+                          <td>
+                            <span class="badge bg-light text-dark px-2 py-1" style="white-space:normal;">{{ info.direccion_inicio }}</span>
+                          </td>
+                          <td>
+                            <span class="badge bg-light text-dark px-2 py-1" style="white-space:normal;">{{ info.direccion_fin }}</span>
+                          </td>
+                          <td>
+                            <span class="badge bg-info text-dark px-2 py-1">{{ info.km_viaje }}</span>
+                          </td>
+                          <td>
+                            <span class="badge bg-success px-2 py-1">{{ info.obj.gasolina_inicio|floatformat:2 }} L</span>
+                          </td>
+                          <td>
+                            <span class="badge bg-warning text-dark px-2 py-1">{{ info.obj.gasolina_fin|floatformat:2 }} L</span>
+                          </td>
+                          <td>
+                            <span class="badge bg-secondary px-2 py-1">{{ info.obj.porcentaje_ahorrado|floatformat:2 }}%</span>
+                          </td>
+                          <td>
+                            <span class="badge px-2 py-1">{{ info.obj.duracion_viaje|floatformat:2 }} min</span>
+                          </td>
+                          <td>
+                            <a href="{% url 'ver_mapa_ruta' info.obj.id %}" target="_blank" class="btn btn-outline-info btn-sm">
+                              <i class="fa fa-map"></i> Ver ruta
+                            </a>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <style>
+                    .table-responsive { overflow-x: auto; }
+                    .badge { font-size: 1rem; }
+                    @media (max-width: 1200px) {
+                      .card.mb-3.w-100 { max-width: 100%; }
+                      .table-responsive { max-width: 100%; }
+                    }
+                  </style>
+                  <!-- Mapa modal -->
+                  <div class="modal fade" id="modalRuta" tabindex="-1" aria-labelledby="modalRutaLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="modalRutaLabel">Ruta del viaje</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                          <div id="mapaRuta" style="height:400px;width:100%;"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+                  <script>
+                    let modalRuta = document.getElementById('modalRuta');
+                    let mapaRuta = null;
+                    let rutaLayer = null;
+
+                    document.querySelectorAll('.ver-ruta-btn').forEach(btn => {
+                      btn.addEventListener('click', function() {
+                        const viajeId = this.getAttribute('data-viaje-id');
+                        fetch("{% url 'obtener_ruta_viaje' 0 %}".replace('0', viajeId))
+                          .then(res => res.json())
+                          .then(data => {
+                            // Mostrar modal
+                            var modal = new bootstrap.Modal(modalRuta);
+                            modal.show();
+
+                            setTimeout(function() {
+                              // Limpia el contenedor del mapa antes de crear uno nuevo
+                              document.getElementById('mapaRuta').innerHTML = "";
+                              // Si ya existe un mapa, elimínalo
+                              if (mapaRuta) {
+                                mapaRuta.remove();
+                                mapaRuta = null;
+                              }
+                              // Crear el mapa
+                              mapaRuta = L.map('mapaRuta').setView([10.5, -66.9], 6);
+                              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '&copy; OpenStreetMap contributors'
+                              }).addTo(mapaRuta);
+
+                              if (data.ruta && data.ruta.length > 0) {
+                                let latlngs = data.ruta.map(p => [p.lat, p.lng]);
+                                rutaLayer = L.polyline(latlngs, {color: 'blue', weight: 5}).addTo(mapaRuta);
+                                mapaRuta.fitBounds(rutaLayer.getBounds());
+                                // Marcadores de inicio y fin
+                                L.marker(latlngs[0], {icon: L.icon({iconUrl: 'https://cdn-icons-png.flaticon.com/512/447/447031.png', iconSize: [25, 40], iconAnchor: [12, 40]})}).addTo(mapaRuta);
+                                L.marker(latlngs[latlngs.length-1], {icon: L.icon({iconUrl: 'https://cdn-icons-png.flaticon.com/512/447/447038.png', iconSize: [25, 40], iconAnchor: [12, 40]})}).addTo(mapaRuta);
+                              }
+                            }, 300);
+                          });
+                      });
+                    });
+
+                    // Limpiar mapa al cerrar modal
+                    modalRuta.addEventListener('hidden.bs.modal', function () {
+                      if (mapaRuta) {
+                        mapaRuta.remove();
+                        mapaRuta = null;
+                        rutaLayer = null;
+                      }
+                    });
+                  </script>
+                  {% else %}
+                  <p class="text-center">No hay viajes registrados para este vehículo.</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+{% endblock %}

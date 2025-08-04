@@ -1,0 +1,123 @@
+{% extends 'dashmenu/main.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Actualizar Productos</h4>
+          {% if messages %}
+          {% for m in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{m}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>         
+          {% endfor %}
+          {% endif %}
+          <form action="" method="post" enctype="multipart/form-data" class="forms-sample">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.producto.label_tag }}
+                  {% if form.producto.errors %}
+                    {{ form.producto|add_class:"form-control is-invalid" }}
+                    <div class="invalid-feedback">
+                      {{ form.producto.errors|striptags }}
+                    </div>
+                  {% else %}
+                    {{ form.producto|add_class:"form-control" }}
+                  {% endif %}
+                </div>
+                <div class="form-group">
+                  {{ form.cantidad.label_tag }}
+                  {% if form.cantidad.errors %}
+                    {{ form.cantidad|add_class:"form-control is-invalid" }}
+                    <div class="invalid-feedback">
+                      {{ form.cantidad.errors|striptags }}
+                    </div>
+                  {% else %}
+                    {{ form.cantidad|add_class:"form-control" }}
+                  {% endif %}
+                </div>
+                <div class="form-group">
+                  {{ form.unidad.label_tag }}
+                  {% if form.unidad.errors %}
+                    {{ form.unidad|add_class:"form-control is-invalid" }}
+                    <div class="invalid-feedback">
+                      {{ form.unidad.errors|striptags }}
+                    </div>
+                  {% else %}
+                    {{ form.unidad|add_class:"form-control" }}
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.existencia_min.label_tag }}
+                  {% if form.existencia_min.errors %}
+                    {{ form.existencia_min|add_class:"form-control is-invalid" }}
+                    <div class="invalid-feedback">
+                      {{ form.existencia_min.errors|striptags }}
+                    </div>
+                  {% else %}
+                    {{ form.existencia_min|add_class:"form-control" }}
+                  {% endif %}
+                </div>
+                <div class="form-group">
+                  {{ form.precio.label_tag }}
+                  {% if form.precio.errors %}
+                    {{ form.precio|add_class:"form-control is-invalid" }}
+                    <div class="invalid-feedback">
+                      {{ form.precio.errors|striptags }}
+                    </div>
+                  {% else %}
+                    {{ form.precio|add_class:"form-control" }}
+                  {% endif %}
+                </div>
+                <div class="form-group">
+                  {{ form.categoria.label_tag }}
+                  {% if form.categoria.errors %}
+                    {{ form.categoria|add_class:"form-control is-invalid" }}
+                    <div class="invalid-feedback">
+                      {{ form.categoria.errors|striptags }}
+                    </div>
+                  {% else %}
+                    {{ form.categoria|add_class:"form-control" }}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  {{ form.imagen.label_tag }}
+                  {% if form.imagen.errors %}
+                    {{ form.imagen|add_class:"form-control-file is-invalid" }}
+                    <div class="invalid-feedback">
+                      {{ form.imagen.errors|striptags }}
+                    </div>
+                  {% else %}
+                    {{ form.imagen|add_class:"form-control-file" }}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <button type="submit" class="btn btn-primary mr-2">Actualizar Producto</button>
+              <a href="{% url 'inventario_general' %}" class="btn btn-outline-light">Cancelar</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'dashmenu/main.html' %}
+{% load crispy_forms_filters %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title">Agregar Productos</h4>
+          <form action="" method="post" enctype="multipart/form-data" class="forms-sample">
+            {% csrf_token %}
+
+            <!-- Rejilla para organizar los campos -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.producto.label_tag }}
+                  {{ form.producto|add_class:"form-control" }}
+                </div>
+                <div class="form-group">
+                  {{ form.cantidad.label_tag }}
+                  {{ form.cantidad|add_class:"form-control" }}
+                </div>
+                <div class="form-group">
+                  {{ form.unidad.label_tag }}
+                  {{ form.unidad|add_class:"form-control" }}
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="form-group">
+                  {{ form.existencia_min.label_tag }}
+                  {{ form.existencia_min|add_class:"form-control" }}
+                </div>
+                <div class="form-group">
+                  {{ form.precio.label_tag }}
+                  {{ form.precio|add_class:"form-control" }}
+                </div>
+                <div class="form-group">
+                  {{ form.categoria.label_tag }}
+                  {{ form.categoria|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  {{ form.imagen.label_tag }}
+                  {{ form.imagen|add_class:"form-control-file" }}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  {{ form.unidad_venta.label_tag }}
+                  {{ form.unidad_venta|add_class:"form-control" }}
+                </div>
+              </div>
+            </div>
+
+            <h5 class="mt-4">Precios por Unidad de Venta</h5>
+            <div class="formset-section">
+              {{ formset.management_form }}
+              <div class="row">
+                {% for subform in formset %}
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      {{ subform.unidad_venta.label_tag }}
+                      {{ subform.unidad_venta|add_class:"form-control" }}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      {{ subform.precio.label_tag }}
+                      {{ subform.precio|add_class:"form-control" }}
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <button type="submit" class="btn btn-primary mr-2">Agregar Producto</button>
+              <a href="{% url 'inventario_general' %}" class="btn btn-outline-light">Cancelar</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

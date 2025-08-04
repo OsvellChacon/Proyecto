@@ -1,0 +1,132 @@
+{% extends 'dashmenu/main.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="main-body">
+        <div class="row gutters-sm">
+          <div class="col-md-4 mb-3">
+            <div class="card">
+              <div class="card-body">
+                {% if messages %}
+                {% for m in messages %}
+                  <div class="alert alert-success" role="alert">
+                      {{m}}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>         
+                {% endfor %}
+              {% endif %}
+                <div class="d-flex flex-column align-items-center text-center">
+                  {% if producto.imagen %}
+                  <img src="{{ producto.imagen.url }}" alt="{{ producto.producto }}" class="rounded-circle" width="150">
+                  {% else %}
+                    <a class="navbar-brand brand-logo mr-5" href="{% url 'dashboard' %}">No hay imagen disponible</a>
+                  {% endif %}
+                  <div class="mt-3">
+                    <h4>{{producto.producto}}</h4>
+                    <p class="text-secondary mb-1">
+                      {% if producto.cantidad >= 50 %}
+                      <p class="badge badge-success">Disponible</p>
+                    {% elif producto.cantidad >= 1 %}
+                      <p class="badge badge-warning">Reabastecer</p>
+                    {% else %}
+                      <p class="badge badge-danger">Agotado</p>
+                    {% endif %}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card mt-3">
+              <center><h5><sup><ins>Acciones del Usuario</del></sup></h5></center>
+                <ul class="list-group list-group-flush">
+                  {% for transaccion in transacciones %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                      <div>
+                          <h6 class="mb-0">
+                              Transacción 
+                              {% if transaccion.tipo == 'ENTRADA' %}
+                                  de entrada
+                              {% else %}
+                                  de salida
+                              {% endif %}
+                          </h6>
+                          <p class="text-secondary">Cantidad: {{ transaccion.cantidad }} - Fecha: {{ transaccion.fecha }}</p>
+                      </div>
+                      <div>
+                          <!-- Puedes ajustar esta sección según lo que desees mostrar, como detalles adicionales de la transacción -->
+                          <p class="text-secondary">Detalle: {{ transaccion.detalle|default:"N/A" }}</p>
+                      </div>
+                  </li>
+                  {% empty %}
+                  <li class="list-group-item">No hay transacciones registradas.</li>
+                  {% endfor %}
+              </ul>
+              
+            
+          </div>          
+          </div>
+          <div class="col-md-8">
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-sm-3">
+                    <h6 class="mb-0">Cantidades</h6>
+                  </div>
+                  <div class="col-sm-9 text-secondary">
+                    {{producto.cantidad}}
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <h6 class="mb-0">Precio Unitario</h6>
+                  </div>
+                  <div class="col-sm-9 text-secondary">
+                    {{producto.precio}}$
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <h6 class="mb-0">Exitencia Minima</h6>
+                  </div>
+                  <div class="col-sm-9 text-secondary">
+                    {{producto.existencia_min}}
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <h6 class="mb-0">Categoria</h6>
+                  </div>
+                  <div class="col-sm-9 text-secondary">
+                    {{producto.categoria}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>          
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <form method="GET" action="{% url 'producto_transacciones' producto.id %}" class="form-inline justify-content-center flex-wrap mb-4">
+              <div class="form-group mb-2">
+                <label for="fecha_inicio" class="mr-2">Fecha de inicio:</label>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" value="{{ request.GET.fecha_inicio }}">
+              </div>
+              <div class="form-group mx-sm-3 mb-2">
+                <label for="fecha_fin" class="mr-2">Fecha de fin:</label>
+                <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" value="{{ request.GET.fecha_fin }}">
+              </div>
+              <button type="submit" class="btn btn-outline-primary mb-2">Filtrar</button>
+            </form>          
+            <div class="d-flex justify-content-center mt-4 flex-wrap">
+              <a href="{% url 'reporte_transacciones_pdf' producto.id %}?fecha_inicio={{ request.GET.fecha_inicio }}&fecha_fin={{ request.GET.fecha_fin }}" target="_blank" class="btn btn-outline-danger m-2">Descargar PDF: <i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>
+              <a href="{% url 'inventario_general' %}" class="btn btn-outline-primary m-2">Regresar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+{% endblock %}
