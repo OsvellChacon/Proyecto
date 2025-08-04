@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-!8!_g0e)&@5@##_j2nf^28o7qr0&uq012wb*go($*$mt^m4$7@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '*']
+ALLOWED_HOSTS = ['localhost', '*', 'proyecto-production-2467.up.railway.app']
 
 LOGIN_REDIRECT_URL = '/dashboard'
 LOGOUT_REDIRECT_URL = '/'
@@ -173,4 +173,4 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CSRF_TRUSTED_ORIGINS = ['http://*']
+CSRF_TRUSTED_ORIGINS = ['http://*', 'https://proyecto-production-2467.up.railway.app']
